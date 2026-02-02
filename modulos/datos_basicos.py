@@ -1,87 +1,71 @@
 """
 Módulo de Datos Básicos
 -----------------------
-Responsable de la captura de datos desde la consola, 
-conversión de tipos y validación de reglas de negocio
-mediante el módulo de validaciones.
+Captura y valida entradas del usuario interactuando con las nuevas estructuras.
 """
-
-# Importamos el módulo hermano
-from modulos import validaciones
+from modulos import validaciones, gestion_datos
 
 def solicitar_nombre():
-    """Solicita nombre y valida longitud mínima."""
     while True:
         nombre = input("📝 Ingrese el nombre del producto: ").strip()
         if validaciones.validar_nombre_producto(nombre):
             return nombre
-        print("⚠️  Error: El nombre debe tener al menos 3 caracteres.")
+        print("⚠️  Error: Nombre inválido (min 3 caracteres).")
 
 def solicitar_precio():
-    """Solicita precio, valida tipo float y regla de negocio (>0)."""
     while True:
         try:
-            entrada = input("💲 Ingrese el precio del producto: ")
-            precio = float(entrada)
-            
-            # TASK-009: Validación condicional robusta
-            if validaciones.validar_precio_logico(precio):
-                return precio
-            else:
-                print("⚠️  Error: El precio debe ser mayor a 0 y razonable.")
-                
-        except ValueError:
-            print("⚠️  Error: Debe ingresar un número válido.")
+            precio = float(input("💲 Ingrese el precio: "))
+            if validaciones.validar_precio_logico(precio): return precio
+            print("⚠️  Error: Precio debe ser positivo.")
+        except ValueError: print("⚠️  Debe ser número.")
 
 def solicitar_cantidad():
-    """Solicita cantidad, valida tipo int y regla de negocio (>=0)."""
     while True:
         try:
-            entrada = input("📦 Ingrese la cantidad disponible: ")
-            cantidad = int(entrada)
-            
-            if validaciones.validar_cantidad_logica(cantidad):
-                return cantidad
-            else:
-                print("⚠️  Error: La cantidad no puede ser negativa.")
-                
-        except ValueError:
-            print("⚠️  Error: Debe ingresar un número entero.")
+            cant = int(input("📦 Ingrese la cantidad: "))
+            if validaciones.validar_cantidad_logica(cant): return cant
+            print("⚠️  Error: No negativos.")
+        except ValueError: print("⚠️  Debe ser entero.")
+
+# --- NUEVAS FUNCIONES PARA EPIC 5 ---
 
 def solicitar_categoria():
-    """Solicita categoría (sin validación compleja por ahora)."""
+    """
+    Muestra las categorías disponibles (Tupla) y obliga a elegir una válida.
+    """
+    print("\n🗂️  Categorías disponibles:")
+    # Recorremos la tupla importada de gestion_datos
+    for i, cat in enumerate(gestion_datos.CATEGORIAS_VALIDAS, 1):
+        print(f"   {i}. {cat}")
+        
     while True:
-        categoria = input("🗂️  Ingrese la categoría: ").strip()
-        if len(categoria) > 0:
-            return categoria
-        print("⚠️  Error: La categoría no puede estar vacía.")
+        entrada = input("👉 Seleccione una categoría (escriba el nombre exacto): ").strip()
+        
+        # Validación de pertenencia a la tupla (TASK-014)
+        if entrada in gestion_datos.CATEGORIAS_VALIDAS:
+            return entrada
+        print("⚠️  Error: Categoría no válida. Revise el listado.")
+
+def solicitar_datos_proveedor():
+    """
+    Captura datos para el diccionario anidado del proveedor.
+    """
+    print("\n🚚 --- Datos del Proveedor ---")
+    nombre_prov = input("   Nombre empresa: ").strip()
+    pais_prov = input("   País de origen: ").strip()
+    
+    # Retornamos un diccionario pequeño (TASK-016)
+    return {
+        "nombre": nombre_prov,
+        "pais": pais_prov
+    }
 
 def solicitar_id():
-    """
-    Solicita un ID al usuario y valida que sea entero.
-    
-    Retorna:
-        int: El ID ingresado.
-    """
     while True:
         try:
-            entrada = input("🆔 Ingrese el ID del producto: ")
-            id_producto = int(entrada)
-            if id_producto > 0:
-                return id_producto
-            print("⚠️  Error: El ID debe ser positivo.")
-        except ValueError:
-            print("⚠️  Error: Debe ingresar un ID numérico.")
+            return int(input("🆔 Ingrese ID: "))
+        except ValueError: pass
 
 def confirmar_accion(mensaje):
-    """
-    Solicita confirmación (S/N) para acciones críticas.
-    
-    Args:
-        mensaje (str): La pregunta a realizar.
-        
-    Retorna:
-        bool: True si la respuesta es 'S', False si es 'N'.
-    """
-    respuesta = input(f"{mensaje} (S/N): ").upper().strip()
-    return respuesta == 'S'
+    return input(f"{mensaje} (S/N): ").upper() == 'S'
