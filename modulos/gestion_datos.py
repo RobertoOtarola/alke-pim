@@ -71,3 +71,47 @@ def crear_producto(nombre, precio, cantidad, categoria):
 
     productos.append(producto)
     return True
+
+def buscar_producto_por_id(id_producto):
+    """
+    Busca un producto por su ID único.
+    
+    Args:
+        id_producto (int): ID a buscar.
+        
+    Retorna:
+        dict: El producto encontrado o None si no existe.
+    """
+    for producto in productos:
+        if producto["id"] == id_producto:
+            return producto
+    return None
+
+def eliminar_producto(id_producto):
+    """
+    Elimina un producto de la lista por su ID.
+    
+    Args:
+        id_producto (int): ID del producto a eliminar.
+        
+    Retorna:
+        bool: True si se eliminó, False si no se encontró.
+    """
+    producto = buscar_producto_por_id(id_producto)
+    if producto:
+        productos.remove(producto)
+        return True
+    return False
+
+def actualizar_stock(id_producto, nueva_cantidad):
+    """
+    Actualiza el stock de un producto y recalcula su estado.
+    """
+    producto = buscar_producto_por_id(id_producto)
+    if producto:
+        producto["cantidad"] = nueva_cantidad
+        # Recalcular campos dependientes
+        producto["valor_inventario"] = producto["precio"] * nueva_cantidad
+        producto["estado_stock"] = verificar_alerta_stock(nueva_cantidad)
+        return True
+    return False

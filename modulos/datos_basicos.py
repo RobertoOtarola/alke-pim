@@ -55,3 +55,33 @@ def solicitar_categoria():
         if len(categoria) > 0:
             return categoria
         print("⚠️  Error: La categoría no puede estar vacía.")
+
+def solicitar_id():
+    """
+    Solicita un ID al usuario y valida que sea entero.
+    
+    Retorna:
+        int: El ID ingresado.
+    """
+    while True:
+        try:
+            entrada = input("🆔 Ingrese el ID del producto: ")
+            id_producto = int(entrada)
+            if id_producto > 0:
+                return id_producto
+            print("⚠️  Error: El ID debe ser positivo.")
+        except ValueError:
+            print("⚠️  Error: Debe ingresar un ID numérico.")
+
+def confirmar_accion(mensaje):
+    """
+    Solicita confirmación (S/N) para acciones críticas.
+    
+    Args:
+        mensaje (str): La pregunta a realizar.
+        
+    Retorna:
+        bool: True si la respuesta es 'S', False si es 'N'.
+    """
+    respuesta = input(f"{mensaje} (S/N): ").upper().strip()
+    return respuesta == 'S'
