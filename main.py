@@ -1,56 +1,47 @@
 """
 Archivo Principal (Entry Point)
 -------------------------------
-Punto de entrada del sistema Alke PIM. Coordina el flujo
-entre el menú y los módulos de lógica.
+Punto de entrada del sistema Alke PIM.
 """
-
 import sys
-# Importación absoluta desde el paquete 'modulos'
-from modulos import menu, gestion_datos
+from modulos import menu, gestion_datos, datos_basicos # <--- Nuevo import
 
 def main():
-    """
-    Función principal que ejecuta el bucle del sistema.
-    """
-    # Mensaje de bienvenida (TASK-003)
     print(f"Iniciando sistema... Python versión: {sys.version.split()[0]}")
-    
     ejecutando = True
 
     while ejecutando:
         menu.mostrar_menu_principal()
         opcion = menu.obtener_opcion()
 
-        # Control de Flujo (EPIC 4 - TASK-010)
         if opcion == '1':
-            print("\n🚧 [TODO] Funcionalidad 'Agregar' en desarrollo...")
-        
+            print("\n--- 🆕 AGREGAR NUEVO PRODUCTO ---")
+            # 1. Captura de datos (TASK-004)
+            nombre = datos_basicos.solicitar_nombre()
+            precio = datos_basicos.solicitar_precio()
+            cantidad = datos_basicos.solicitar_cantidad()
+            categoria = datos_basicos.solicitar_categoria()
+
+            # 2. Guardado de datos (TASK-006)
+            gestion_datos.crear_producto(nombre, precio, cantidad, categoria)
+            print(f"\n✅ Producto '{nombre}' agregado exitosamente.")
+
         elif opcion == '2':
-            # Visualización rápida para verificar estructura (TASK-006)
+            # Listado simple actualizado
             print(f"\n📦 Listado actual ({len(gestion_datos.productos)} productos):")
             for prod in gestion_datos.productos:
-                print(prod)
+                # Uso de f-strings para formato legible
+                print(f"ID: {prod['id']} | {prod['nombre']} | ${prod['precio']} | Stock: {prod['cantidad']} | Total: ${prod['valor_inventario']}")
         
         elif opcion == '3':
-            print("\n🚧 [TODO] Funcionalidad 'Buscar' en desarrollo...")
-        
-        elif opcion == '4':
-            print("\n🚧 [TODO] Funcionalidad 'Actualizar' en desarrollo...")
-        
-        elif opcion == '5':
-            print("\n🚧 [TODO] Funcionalidad 'Eliminar' en desarrollo...")
-            
-        elif opcion == '6':
-            gestion_datos.inicializar_datos_prueba()
-            
+             print("\n🚧 [TODO] Funcionalidad 'Buscar' en desarrollo...")
+        # ... resto del código igual ...
         elif opcion == '7':
-            print("\n👋 Gracias por usar Alke PIM. ¡Hasta pronto!")
+            print("\n👋 Gracias por usar Alke PIM.")
             ejecutando = False
-            
         else:
-            print("\n⚠️ Opción no válida. Intente nuevamente.")
+             if opcion not in ['1', '2', '3', '4', '5', '6', '7']: # Pequeña validación extra
+                print("\n⚠️ Opción no válida.")
 
-# Buenas prácticas: Ejecutar solo si es el script principal
 if __name__ == "__main__":
     main()
