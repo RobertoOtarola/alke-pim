@@ -1,58 +1,57 @@
 """
 Módulo de Datos Básicos
 -----------------------
-Responsable de la captura de datos desde la consola y
-la conversión básica de tipos (str, int, float).
+Responsable de la captura de datos desde la consola, 
+conversión de tipos y validación de reglas de negocio
+mediante el módulo de validaciones.
 """
 
+# Importamos el módulo hermano
+from modulos import validaciones
+
 def solicitar_nombre():
-    """
-    Solicita el nombre del producto al usuario.
-    
-    Retorna:
-        str: El nombre ingresado.
-    """
-    # Se usa .strip() para eliminar espacios accidentales al inicio/final
-    nombre = input("📝 Ingrese el nombre del producto: ").strip()
-    return nombre
+    """Solicita nombre y valida longitud mínima."""
+    while True:
+        nombre = input("📝 Ingrese el nombre del producto: ").strip()
+        if validaciones.validar_nombre_producto(nombre):
+            return nombre
+        print("⚠️  Error: El nombre debe tener al menos 3 caracteres.")
 
 def solicitar_precio():
-    """
-    Solicita el precio y valida que sea un número flotante válido.
-    Maneja la excepción ValueError si el usuario ingresa texto.
-    
-    Retorna:
-        float: El precio convertido.
-    """
+    """Solicita precio, valida tipo float y regla de negocio (>0)."""
     while True:
         try:
             entrada = input("💲 Ingrese el precio del producto: ")
             precio = float(entrada)
-            return precio
+            
+            # TASK-009: Validación condicional robusta
+            if validaciones.validar_precio_logico(precio):
+                return precio
+            else:
+                print("⚠️  Error: El precio debe ser mayor a 0 y razonable.")
+                
         except ValueError:
-            print("⚠️  Error: Debe ingresar un número válido (ej: 10.50).")
+            print("⚠️  Error: Debe ingresar un número válido.")
 
 def solicitar_cantidad():
-    """
-    Solicita la cantidad y valida que sea un número entero.
-    
-    Retorna:
-        int: La cantidad convertida.
-    """
+    """Solicita cantidad, valida tipo int y regla de negocio (>=0)."""
     while True:
         try:
             entrada = input("📦 Ingrese la cantidad disponible: ")
             cantidad = int(entrada)
-            return cantidad
+            
+            if validaciones.validar_cantidad_logica(cantidad):
+                return cantidad
+            else:
+                print("⚠️  Error: La cantidad no puede ser negativa.")
+                
         except ValueError:
             print("⚠️  Error: Debe ingresar un número entero.")
 
 def solicitar_categoria():
-    """
-    Solicita la categoría del producto.
-    
-    Retorna:
-        str: La categoría ingresada.
-    """
-    categoria = input("🗂️  Ingrese la categoría: ").strip()
-    return categoria
+    """Solicita categoría (sin validación compleja por ahora)."""
+    while True:
+        categoria = input("🗂️  Ingrese la categoría: ").strip()
+        if len(categoria) > 0:
+            return categoria
+        print("⚠️  Error: La categoría no puede estar vacía.")

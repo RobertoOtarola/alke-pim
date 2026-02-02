@@ -27,11 +27,15 @@ def main():
             print(f"\n✅ Producto '{nombre}' agregado exitosamente.")
 
         elif opcion == '2':
-            # Listado simple actualizado
             print(f"\n📦 Listado actual ({len(gestion_datos.productos)} productos):")
+            print("-" * 100)
+            # Cabecera simulada
+            print(f"{'ID':<4} | {'Nombre':<20} | {'Precio':<10} | {'Nivel':<10} | {'Stock':<6} | {'Estado'}")
+            print("-" * 100)
+            
             for prod in gestion_datos.productos:
-                # Uso de f-strings para formato legible
-                print(f"ID: {prod['id']} | {prod['nombre']} | ${prod['precio']} | Stock: {prod['cantidad']} | Total: ${prod['valor_inventario']}")
+                print(f"{prod['id']:<4} | {prod['nombre']:<20} | ${prod['precio']:<9} | {prod['nivel_precio']:<10} | {prod['cantidad']:<6} | {prod['estado_stock']}")
+            print("-" * 100)
         
         elif opcion == '3':
              print("\n🚧 [TODO] Funcionalidad 'Buscar' en desarrollo...")
