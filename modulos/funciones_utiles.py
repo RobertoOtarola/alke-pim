@@ -23,21 +23,21 @@ def calcular_valor_producto(precio, cantidad):
 def sumar_inventario_recursivo(lista_productos, indice=0):
     """
     Calcula la suma total del valor del inventario usando recursividad.
-    
+
     Args:
         lista_productos (list): La lista de diccionarios.
         indice (int): Puntero actual en la lista.
-    
+
     Retorna:
         float: La suma acumulada.
     """
     # 1. Caso Base: Si llegamos al final de la lista, la suma es 0
     if indice == len(lista_productos):
         return 0.0
-    
+
     # 2. Obtener valor actual
     producto = lista_productos[indice]
     valor_actual = producto["precio"] * producto["cantidad"]
-    
+
     # 3. Llamada Recursiva: Valor actual + Suma del resto de la lista
     return valor_actual + sumar_inventario_recursivo(lista_productos, indice + 1)
