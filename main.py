@@ -1,103 +1,102 @@
 """
 Archivo Principal (Entry Point)
 -------------------------------
-Sistema Alke PIM actualizado con estructuras avanzadas.
+Sistema Alke PIM v3.0 (Modularizado)
 """
 import sys
-from modulos import menu, gestion_datos, datos_basicos
+# TASK-022: Importación limpia de módulos
+from modulos import menu, gestion_datos, datos_basicos, funciones_utiles
 
 def mostrar_tabla(lista_productos):
-    """Función auxiliar para no repetir código de impresión."""
-    print("-" * 100)
-    print(f"{'ID':<4} | {'Nombre':<18} | {'Precio':<9} | {'Cat.':<12} | {'Prov.':<10} | {'Stock'}")
-    print("-" * 100)
+    """Muestra tabla formateada usando utilidades."""
+    print("-" * 115)
+    print(f"{'ID':<4} | {'Nombre':<18} | {'Precio Unit.':<12} | {'Cat.':<12} | {'Prov.':<10} | {'Stock':<6} | {'Total'}")
+    print("-" * 115)
+    
     for prod in lista_productos:
-        # Acceso a diccionario anidado con .get() para evitar errores
-        nom_prov = prod.get("proveedor", {}).get("nombre", "N/A")
-        print(f"{prod['id']:<4} | {prod['nombre']:<18} | ${prod['precio']:<8} | {prod['categoria']:<12} | {nom_prov:<10} | {prod['cantidad']}")
-    print("-" * 100)
+        # TASK-019: Uso de función de formateo
+        precio_fmt = funciones_utiles.formatear_precio(prod['precio'])
+        total_fmt = funciones_utiles.formatear_precio(prod['valor_inventario'])
+        prov = prod.get("proveedor", {}).get("nombre", "N/A")
+        
+        print(f"{prod['id']:<4} | {prod['nombre']:<18} | {precio_fmt:<12} | {prod['categoria']:<12} | {prov:<10} | {prod['cantidad']:<6} | {total_fmt}")
+    print("-" * 115)
 
 def main():
-    print(f"Iniciando Alke PIM... (v2.0 Estructuras Avanzadas)")
+    print(f"Iniciando Alke PIM... (v3.0 Modular + Recursividad)")
     gestion_datos.inicializar_datos_prueba()
     
     ejecutando = True
-
     while ejecutando:
         menu.mostrar_menu_principal()
-        # Agregamos una opción visual extra manualmente
-        print("8. 📊 Reportes Avanzados (Ordenar/Filtrar)")
+        print("8. 📊 Reportes y Utilidades")
         print("-" * 50)
         
         opcion = menu.obtener_opcion()
 
         if opcion == '1':
-            continuar = True
-            while continuar:
-                print("\n--- 🆕 ALTA DE PRODUCTO ---")
-                nombre = datos_basicos.solicitar_nombre()
-                precio = datos_basicos.solicitar_precio()
-                cantidad = datos_basicos.solicitar_cantidad()
-                
-                # Nuevas solicitudes (Tupla y Diccionario Anidado)
-                categoria = datos_basicos.solicitar_categoria()
-                proveedor = datos_basicos.solicitar_datos_proveedor()
-
-                exito = gestion_datos.crear_producto(nombre, precio, cantidad, categoria, proveedor)
-                if exito:
-                    print(f"✅ Producto guardado.")
-                
-                continuar = datos_basicos.confirmar_accion("\n¿Agregar otro?")
+            n = datos_basicos.solicitar_nombre()
+            p = datos_basicos.solicitar_precio()
+            c = datos_basicos.solicitar_cantidad()
+            cat = datos_basicos.solicitar_categoria()
+            prov = datos_basicos.solicitar_datos_proveedor()
+            if gestion_datos.crear_producto(n, p, c, cat, prov):
+                print("✅ Guardado.")
 
         elif opcion == '2':
-            print(f"\n📦 Listado General:")
             mostrar_tabla(gestion_datos.productos)
 
         elif opcion == '3':
             id_b = datos_basicos.solicitar_id()
             prod = gestion_datos.buscar_producto_por_id(id_b)
             if prod:
-                print(f"\n🔎 Detalle: {prod['nombre']}")
-                print(f"   Categoría: {prod['categoria']}")
-                print(f"   Proveedor: {prod['proveedor']['nombre']} ({prod['proveedor']['pais']})")
+                print(f"\n🔎 --- FICHA PRODUCTO ---")
+                print(f"Nombre: {prod['nombre']}")
+                print(f"Precio: {funciones_utiles.formatear_precio(prod['precio'])}")
+                print(f"Stock:  {prod['cantidad']} ({prod['estado_stock']})")
             else:
                 print("❌ No encontrado.")
 
-        elif opcion == '4': # Actualizar Stock
+        elif opcion == '4':
             id_b = datos_basicos.solicitar_id()
             if gestion_datos.buscar_producto_por_id(id_b):
-                n_cant = datos_basicos.solicitar_cantidad()
-                gestion_datos.actualizar_stock(id_b, n_cant)
-                print("✅ Actualizado.")
+                c = datos_basicos.solicitar_cantidad()
+                gestion_datos.actualizar_stock(id_b, c)
+                print("✅ Stock actualizado.")
             else:
-                print("❌ Producto no encontrado.")
+                print("❌ No existe.")
 
-        elif opcion == '5': # Eliminar
+        elif opcion == '5':
             id_b = datos_basicos.solicitar_id()
             if datos_basicos.confirmar_accion("¿Eliminar?"):
-                if gestion_datos.eliminar_producto(id_b): print("✅ Eliminado.")
-                else: print("❌ No existe.")
+                gestion_datos.eliminar_producto(id_b)
+                print("🗑️ Eliminado.")
 
         elif opcion == '6':
             gestion_datos.inicializar_datos_prueba()
 
         elif opcion == '8':
-            # TASK-017: Demostración de métodos de colecciones
-            print("\n📊 --- REPORTES AVANZADOS ---")
-            print("1. Ver ordenados por precio (Mayor a menor)")
-            print("2. Filtrar por categoría")
-            sub_op = input("👉 Elija reporte: ")
+            print("\n📊 --- REPORTES ---")
+            print("1. Valor Total del Inventario (Cálculo Recursivo)")
+            print("2. Productos ordenados por precio")
+            print("3. Filtrar por categoría")
             
-            if sub_op == '1':
+            sub = input("👉 Opción: ")
+            
+            if sub == '1':
+                # TASK-020: Prueba de la función recursiva
+                total = gestion_datos.obtener_total_inventario()
+                print(f"\n💰 VALOR TOTAL DEL INVENTARIO: {funciones_utiles.formatear_precio(total)}")
+                print("(Cálculo realizado mediante algoritmo recursivo)")
+                
+            elif sub == '2':
                 ordenados = gestion_datos.obtener_productos_ordenados_precio()
                 mostrar_tabla(ordenados)
-            elif sub_op == '2':
-                cat = datos_basicos.solicitar_categoria() # Reusamos la validación de tupla
+                
+            elif sub == '3':
+                cat = datos_basicos.solicitar_categoria()
                 filtrados = gestion_datos.filtrar_por_categoria(cat)
-                if filtrados:
-                    mostrar_tabla(filtrados)
-                else:
-                    print("⚠️  No hay productos en esta categoría.")
+                mostrar_tabla(filtrados)
 
         elif opcion == '7':
             ejecutando = False
