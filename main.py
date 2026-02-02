@@ -3,7 +3,6 @@ Archivo Principal (Entry Point)
 -------------------------------
 Sistema Alke PIM v3.0 (Modularizado)
 """
-import sys
 # TASK-022: Importación limpia de módulos
 from modulos import menu, gestion_datos, datos_basicos, funciones_utiles
 
